@@ -3,7 +3,8 @@ module PerlinNoise;
 import INoise;
 import GenericNoise;
 
-class PerlinNoise : INoise {
+shared class PerlinNoise : INoise {
+
 	float frequency;
 	float lacunarity;
 	NoiseQuality quality;

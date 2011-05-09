@@ -1,12 +1,13 @@
 module NoiseManager;
 
-import std.math;
-import IManager;
+import IManagers;
 import INoise;
 import PerlinNoise;
 
-class NoiseManager : IManager {
+shared class NoiseManager : IManagerShared {
+
 	INoise noiseGen;
+
 	bool init() {
 		noiseGen = new PerlinNoise();
 		noiseGen.setOctaveCount(5);

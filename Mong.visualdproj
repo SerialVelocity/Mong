@@ -63,7 +63,7 @@
   <versionlevel>0</versionlevel>
   <versionids />
   <dump_source>0</dump_source>
-  <mapverbosity>0</mapverbosity>
+  <mapverbosity>4</mapverbosity>
   <createImplib>0</createImplib>
   <defaultlibname />
   <debuglibname />
@@ -74,7 +74,7 @@
   <pathCv2pdb>$(VisualDInstallDir)cv2pdb\cv2pdb.exe</pathCv2pdb>
   <objfiles />
   <linkswitches />
-  <libfiles />
+  <libfiles>DerelictUtil.lib DerelictGL.lib DerelictSDL.lib DerelictIL.lib</libfiles>
   <libpaths />
   <deffile />
   <resfile />
@@ -182,10 +182,21 @@
  </Config>
  <Folder name="Mong">
   <File path="main.d" />
-  <File path="IManager.d" />
+  <File path="IManagers.d" />
   <File path="INoise.d" />
   <File path="NoiseManager.d" />
   <File path="PerlinNoise.d" />
   <File path="GenericNoise.d" />
+  <File path="GlobalVariables.d" />
+  <File path="ThreadManager.d" />
+  <File path="ChunkManager.d" />
+  <File path="Chunk.d" />
+  <File path="Block.d" />
+  <File path="RenderManager.d" />
+  <File path="GameManager.d" />
+  <File path="TextureManager.d" />
+  <File path="IPlayer.d" />
+  <File path="LocalPlayer.d" />
+  <File path="InputManager.d" />
  </Folder>
 </DProject>

@@ -1,9 +1,27 @@
 module main;
 
-import std.stdio;
+import std.datetime;
 
-int main(string[] argv)
+import GameManager;
+import GlobalVariables;
+
+int main(string[] args)
 {
-   writeln("Hello D-World!");
-   return 0;
+	GameManager game = new GameManager();
+	if(!game.init())
+		return -1;
+
+	StopWatch timer;
+	timer.start();
+
+	float delta;
+
+	while(game.update(delta)) {
+		delta = timer.peek().msecs / 1000.0f;
+		timer.reset();
+	}
+
+	game.cleanup();
+
+	return 0;
 }

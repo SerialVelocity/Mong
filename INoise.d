@@ -6,7 +6,7 @@ enum NoiseQuality {
 	BEST
 }
 
-interface INoise {
+shared interface INoise {
 	void setFrequency(float frequency);
 	void setLacunarity(float lacunarity);
 	void setNoiseQuality(NoiseQuality quality);
