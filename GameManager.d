@@ -20,6 +20,7 @@ static class GameManager : IManager {
 		retVal &= chunk.update(delta);
 		foreach(player; players)
 			retVal &= player.update(delta);
+		retVal &= gui.update(delta);
 		retVal &= render.update(delta);
 		return retVal;
 	}

@@ -13,7 +13,7 @@ import IManagers;
 import GlobalVariables;
 
 class RenderManager : IManager {
-	
+
 	struct VBOData {
 		uint vbo;
 		uint texVBO;
@@ -22,13 +22,11 @@ class RenderManager : IManager {
 	
 	SList!VBOData vbos;
 	
+	string[] text;
+	uint font;
+
 	float[3] cameraPos;
 	float[2] cameraAngle;
-	
-	debug {
-		private StopWatch timer;
-		int fps = 0;
-	}
 	
 	bool init() {
 		// initialize SDL, GL and GLU Derelict modules
@@ -71,7 +69,8 @@ class RenderManager : IManager {
 		glFogf (GL_FOG_DENSITY, fogDensity);
 		glHint (GL_FOG_HINT, GL_FASTEST);
 		
-		debug timer.start();
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
 		
 		return true;
 	}
@@ -99,19 +98,80 @@ class RenderManager : IManager {
 		vbos.clear();
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		switchToOrthoMatrix();
+		glDisable(GL_DEPTH_TEST);
+		if(text.length > 0) {
+			texture.enableFont();
+			glColor3f(1.0f, 0.0f, 0.0f);
+			glTranslatef(0, yResolution - 16, 0);
+			glListBase(font);
+			foreach(string line; text) {
+				glCallLists(line.length,GL_UNSIGNED_BYTE,line.ptr);
+				glTranslatef(cast(int)line.length*-16, -16, 0);
+			}
+			texture.disableFont();
+			text.length = 0;
+		}
 		glDisable(GL_TEXTURE_2D);
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glLoadIdentity();
+		glBegin(GL_LINES);
+		{
+			glVertex2f(xResolution / 2.0f        , yResolution / 2.0f - 20.0f);
+			glVertex2f(xResolution / 2.0f        , yResolution / 2.0f + 20.0f);
+			glVertex2f(xResolution / 2.0f - 20.0f, yResolution / 2.0f);
+			glVertex2f(xResolution / 2.0f + 20.0f, yResolution / 2.0f);
+		}
+		glEnd();
+		glEnable(GL_DEPTH_TEST);
+		revertProjectionMatrix();
 		
 		SDL_GL_SwapBuffers();
-		
-		debug {
-			++fps;
-			if(timer.peek().seconds >= 1) {
-				writefln("FPS: %d", fps);
-				fps = 0;
-				timer.reset();
+		return true;
+	}
+
+	void generateFont()
+	{
+		font = glGenLists(256);
+		texture.enableFont();
+		foreach(y; 0..16) {
+			foreach(x; 0..16) {
+				glNewList(font+y*16+x, GL_COMPILE);
+					glBegin(GL_QUADS);
+						glTexCoord2f(0.0625*(x+1), 0.0625*(y + 1));
+						glVertex2i(16, 0);
+						glTexCoord2f(0.0625*(x + 1), 0.0625*y);
+						glVertex2i(16, 16);
+						glTexCoord2f(0.0625*x, 0.0625*y);
+						glVertex2i(0, 16);
+						glTexCoord2f(0.0625*x, 0.0625*(y + 1));
+						glVertex2i(0, 0);
+					glEnd();
+					glTranslated(16,0,0);
+				glEndList();
 			}
 		}
-		return true;
+		texture.disableFont();
+	}
+
+	static void switchToOrthoMatrix()
+	{
+		glMatrixMode (GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		glOrtho (0.0, xResolution, 0.0, yResolution, -1.0, 1.0);
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+	}
+
+	static void revertProjectionMatrix()
+	{
+		glPopMatrix();
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+		glMatrixMode(GL_MODELVIEW);
 	}
 	
 	void setCameraPosition(float[3] pos) {
@@ -132,6 +192,11 @@ class RenderManager : IManager {
 		}
 	}
 	
+	void renderText(string line) {
+		text.length = text.length + 1;
+		text[$-1] = line;
+	}
+
 	pure GLdouble[16] getGluPerspective(GLdouble fovx, GLdouble aspect, GLdouble zNear, GLdouble zFar)
 	{
 	   // This code is based off the MESA source for gluPerspective

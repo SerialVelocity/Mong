@@ -6,6 +6,7 @@ import NoiseManager;
 import RenderManager;
 import TextureManager;
 import ThreadManager;
+import GUIManager;
 
 import IPlayer;
 import LocalPlayer;
@@ -27,6 +28,7 @@ const static float fogColor[4] = [0.5295f, 0.8078f, 0.9804f, 1.0f];
 
 shared NoiseManager noise;
 ChunkManager chunk;
+GUIManager gui;
 RenderManager render;
 ThreadManager thread;
 InputManager input;
@@ -46,6 +48,7 @@ static shared class GV {
 		chunk = new ChunkManager();
 		texture = new TextureManager();
 		input = new InputManager();
+		gui = new GUIManager();
 		
 		chunkShared = cast(shared ChunkManager)chunk;
 		
@@ -55,6 +58,8 @@ static shared class GV {
 		if(!texture.init()) return false;
 		if(!chunk.init()) return false;
 		if(!thread.init()) return false;
+		render.generateFont();
+		if(!gui.init()) return false;
 		
 		return true;
 	}

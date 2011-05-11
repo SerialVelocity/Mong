@@ -198,5 +198,6 @@
   <File path="IPlayer.d" />
   <File path="LocalPlayer.d" />
   <File path="InputManager.d" />
+  <File path="GUIManager.d" />
  </Folder>
 </DProject>

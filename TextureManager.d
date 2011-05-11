@@ -10,6 +10,8 @@ import derelict.devil.il;
 import IManagers;
 
 class TextureManager : IManager {
+	uint texture;
+	uint font;
 	bool init() {
 		DerelictIL.load();
 		
@@ -17,10 +19,19 @@ class TextureManager : IManager {
 		ilEnable(IL_ORIGIN_SET);
 		ilOriginFunc(IL_ORIGIN_UPPER_LEFT);
 		
-		uint texture = loadImage("data\\terrain.png");
+		font = loadImage("data\\font.gif", true);
+		texture = loadImage("data\\terrain.png");
 		return true;
 	}
 	
+	void enableFont() {
+		glBindTexture(GL_TEXTURE_2D, font);
+	}
+
+	void disableFont() {
+		glBindTexture(GL_TEXTURE_2D, texture);
+	}
+
 	bool update(float delta) {
 		return true;
 	}
@@ -29,7 +40,7 @@ class TextureManager : IManager {
 	}
 	
 	// Function load a image, turn it into a texture, and return the texture ID as a GLuint for use
-	GLuint loadImage(const char* theFileName)
+	GLuint loadImage(const char* theFileName, bool containsAlpha = false)
 	{
 		ILuint imageID;
 		GLuint textureID;
@@ -37,7 +48,7 @@ class TextureManager : IManager {
 		ilBindImage(imageID);
 		
 		if (ilLoadImage(theFileName)) {
-			if (!ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE)) {
+			if (!ilConvertImage(containsAlpha ? IL_RGBA : IL_RGB, IL_UNSIGNED_BYTE)) {
 				writefln("Image conversion failed - IL reports error: ", ilGetError());
 				return 0;
 			}
