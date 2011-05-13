@@ -30,6 +30,20 @@ class LocalPlayer : IPlayer {
 		input.bindKey(SDLK_UP, &onMoveUp);
 		input.bindKey(SDLK_DOWN, &onMoveDown);
 		input.bindMouseMotion(&onMouseMotion);
+
+		debug input.bindKey(SDLK_q, &loadMore);
+	}
+
+	debug {
+		int radius = 1;
+		void loadMore(SDL_Event event) {
+			if(event.type == SDL_KEYDOWN) {
+				++radius;
+				foreach(i; -radius..radius+1)
+					foreach(j; -radius..radius+1)
+						thread.addPosToBlockLoader([i, 0, j]);
+			}
+		}
 	}
 	
 	void onMoveUp(SDL_Event event) {
@@ -67,21 +81,21 @@ class LocalPlayer : IPlayer {
 	}
 	
 	bool update(float delta) {
-		if(moveUp || moveDown) {
+		if(moveUp ^ moveDown) {
 			pos[1] += (moveUp ? delta : -delta) * moveSpeed;
 		}
 		
-		if(moveLeft || moveRight) {
+		if(moveLeft ^ moveRight) {
 			pos[0] -= (moveLeft ? delta : -delta) * moveSpeed * cos(angle[0] * PI / 180.0f);
 			pos[2] += (moveLeft ? delta : -delta) * moveSpeed * sin(angle[0] * PI / 180.0f);
 		}
 		
-		if(moveForward || moveBackward) {
+		if(moveForward ^ moveBackward) {
 			pos[0] += (moveForward ? delta : -delta) * moveSpeed * sin(angle[0] * PI / 180.0f);
 			pos[2] += (moveForward ? delta : -delta) * moveSpeed * cos(angle[0] * PI / 180.0f);
 		}
 		
-		if(moveUp || moveDown || moveLeft || moveRight || moveForward || moveBackward) {
+		if((moveUp ^ moveDown) || (moveLeft ^ moveRight) || (moveForward ^ moveBackward)) {
 			render.setCameraPosition(pos);
 		}
 		
